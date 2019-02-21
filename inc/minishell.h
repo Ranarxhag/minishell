@@ -13,12 +13,15 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# define BUILTINS (const char*[6]){"echo", "cd", "setenv", "unsetenv", "env", "exit"}
+# define BUILTINS (const char*[7]){"echo", "cd", "setenv", "unsetenv", "env", "exit"}
 
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/types.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <sys/wait.h>
 # include "../libft/includes/libft.h"
 
 /* A SUPPRIMER STDIO ? */
@@ -33,6 +36,7 @@ typedef struct 		s_env
 
 void				set_environment(t_env **env, char **envp);
 void				delete_environment(t_env **env);
+char				**env_to_string(t_env *env);
 
 int					execute_instructions(char **instructions, t_env *env);
 int					execute_instruction(char **instruction, t_env *env);
@@ -49,6 +53,11 @@ void				delete_tab(char ***tab);
 t_env				*find_env_item_by_value(t_env *env, char *value);
 t_env				*find_env_item_by_key(t_env *env, char *key);
 
-char				*set_path(char *command, t_env *env);
+char				*set_path(char **command, t_env *env);
 
+void				error_message(char *message, char *var);
+
+int					handle_expansions(char **command, t_env *env);
+int					tilde_expansion(char **command, t_env *env);
+int					dollar_expansion(char **command, t_env *env);
 #endif

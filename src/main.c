@@ -79,24 +79,9 @@ char	*get_command(void)
 char	**split_command(char *buff)
 {
 	char **instructions;
-	char *tmp;
-	int i;
 
 	if (!(instructions = ft_strsplit(buff, ';')))
 		return (NULL);
-	i = 0;
-	while (instructions[i])
-	{
-		tmp = instructions[i];
-		if(!(instructions[i] = ft_strtrim((char const*)instructions[i])))
-		{
-			ft_strdel(&tmp);
-			delete_tab(&instructions);
-			return (NULL);
-		}
-		ft_strdel(&tmp);
-		i++;
-	}
 	return (instructions);
 }
 
@@ -120,6 +105,18 @@ void	handle_signal(int signum)
 		exit(EXIT_FAILURE);
 }
 
+int		is_valid_buff(char *buff)
+{
+	int i;
+
+	i = 0;
+	while (buff[i] && ft_isspace(buff[i]))
+		i++;
+	if (buff[i] == '\0')
+		return (0);
+	return (1);
+}
+
 int		main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
@@ -134,7 +131,7 @@ int		main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		ft_printf("$> ");
-		if (get_next_line(0, &buff) == -1)
+		if (get_next_line(0, &buff) == -1 || !is_valid_buff(buff))
 			continue ;
 		if (!(instructions = split_command(buff)))
 		{

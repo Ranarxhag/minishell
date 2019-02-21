@@ -12,6 +12,43 @@
 
 #include "minishell.h"
 
+void	del_string_env(char	***str, int i)
+{
+	while (i >= 0)
+	{
+		ft_strdel(str[i]);
+		i--;
+	}
+	*str = NULL;
+	str = NULL;
+}
+
+char	**env_to_string(t_env *env)
+{
+	char	**str;
+	int		length;
+	int		i;
+	t_env	*tmp;
+
+	i = 0;
+	length = count_env_items(env);
+	if (!(str = (char**)malloc(sizeof(char*) * (length + 1))))
+		return (NULL);
+	str[length] = NULL;
+	tmp = env;
+	while (i < length)
+	{
+		if (!(str[i] = ft_str3join(tmp->key, "=", tmp->value)))
+		{
+			del_string_env(&str, --i);
+			return (NULL);
+		}
+		tmp = tmp->next;
+		i++;
+	}
+	return (str);
+}
+
 void	delete_environment(t_env **env)
 {
 	t_env *next;
