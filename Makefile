@@ -16,12 +16,16 @@ INC_DIR = ./inc
 
 NAME = minishell
 
-SRC_FILES  = main.c env.c execute.c builtins.c paths.c errors.c expansions.c
+SRC_FILES  = main.c env.c execute.c builtins.c paths.c errors.c \
+			 expansions.c parser.c
 
 SRC_FILES += linked_list/add_env_item.c linked_list/count_env_items.c \
 			 linked_list/new_env_item.c linked_list/find_env_item.c
 
 SRC_FILES += expansions/tilde/tilde.c expansions/dollar/dollar.c
+
+SRC_FILES += builtins/cd.c builtins/echo.c builtins/env.c builtins/exit.c \
+			 builtins/setenv.c builtins/unsetenv.c
 
 SRC  = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ  = $(addprefix $(OBJ_DIR)/, $(subst .c,.o, $(SRC_FILES)))

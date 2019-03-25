@@ -137,6 +137,7 @@ int		main(int argc, char **argv, char **envp)
 		{
 			ft_strdel(&buff);
 			delete_environment(&env);
+			continue ;
 		}
 		ft_strdel(&buff);
 		execute_instructions(instructions, env);

@@ -13,7 +13,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# define BUILTINS (const char*[7]){"echo", "cd", "setenv", "unsetenv", "env", "exit"}
+# define BUILTINS (const char*[7]){"echo","cd","setenv","unsetenv","env","exit"}
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -60,4 +60,13 @@ void				error_message(char *message, char *var);
 int					handle_expansions(char **command, t_env *env);
 int					tilde_expansion(char **command, t_env *env);
 int					dollar_expansion(char **command, t_env *env);
+
+char				**parse_cmd(char *cmd);
+
+int					cd_builtin(char	**instruction, t_env *env);
+int					echo_builtin(char **instruction, t_env *env);
+int					env_builtin(char **instruction, t_env *env);
+int					exit_builtin(char **instruction, t_env *env);
+int					setenv_builtin(char **instruction, t_env *env);
+int					unsetenv_builtin(char **instruction, t_env *env);
 #endif

@@ -12,96 +12,104 @@
 
 #include "minishell.h"
 
-int		count_words(char *cmd)
+static char		**delete_cmd_tab(char **tab, int j)
+{
+	while (j >= 0)
+	{
+		ft_strdel(&(tab[j]));
+		j--;
+	}
+	free(tab);
+	tab = NULL;
+	return (NULL);
+}
+
+static int		get_word_length(char *cmd, int *quote)
+{
+	int count;
+
+	count = 0;
+	if (cmd[0] == '"')
+	{
+		*quote = 1;
+		return ((int)ft_strclen((const char*)cmd + 1, '"'));
+	}
+	while (cmd[count] && !ft_isspace(cmd[count]))
+		count++;
+	return (count);
+}
+
+static int		count_words(char *cmd)
 {
 	int i;
 	int words;
+	int quote;
+	int length;
 
-	i = -1;
+	i = 0;
 	words = 0;
-	while (cmd[++i])
-	{
-		if (cmd[i] == '"')
-		{
-			i += ft_strlen(cmd) - ft_strclen(&(cmd[i + 1]), '"') - i;
-			continue ;
-		}
-		if ((i == 0 && !ft_isspace(cmd[i])) || (ft_isspace(cmd[i]) &&
-			(!ft_isspace(cmd[i + 1]) && cmd[i + 1] != '\0')))
-			words++;
-	}
-	return (1);
-}
-
-int		create_words(char *cmd, char **tab, size_t i, int j)
-{
-	unsigned int	start;
-	size_t			length;
-	int			apo;
-
-	start = 0;
+	quote = 0;
 	length = 0;
-	apo = 0;
 	while (cmd[i])
 	{
-		length = 0;
-		if ((i == 0 && !ft_isspace(cmd[i])) || (ft_isspace(cmd[i]) &&
-			(!ft_isspace(cmd[i + 1]) && cmd[i + 1] != '\0')))
+		if (!ft_isspace(cmd[i]))
 		{
-			start = (cmd[i + ((i == 0) ? 0 : 1)] == '"') ? 1 : 0;
-			if (cmd[i + ((i == 0) ? 0 : 1)] == '"')
-			{
-				length = ft_strclen(&(cmd[i + ((i == 0) ? 1 : 2)]), '"');
-				apo = 1;
-			}
-			while (!ft_isspace(cmd[i + length + ((i == 0) ? 0 : 1)]))
-				length++;
-			if (!(tab[++j] = ft_strsub(&(cmd[i + ((i == 0) ? 0 : 1)]), start, length + ((i == 0) ? 0 : 0))))
-				return (0);
-			if (apo)
-			{
-				i += ft_strclen(&(cmd[i + ((i == 0) ? 1 : 2)]), '"');
-				continue ;
-			}
+			words++;
+			length = get_word_length(&(cmd[i]), &quote);
+			i += length + (quote == 1 ? 3 : 0);
+			quote = 0;
 		}
 		i++;
 	}
-	tab[++j] = NULL;
+	return (words);
+}
+
+static int		create_words(char *cmd, char **tab, size_t i, unsigned int *j)
+{
+	int length;
+	int quote;
+
+	length = 0;
+	quote = 0;
+	while (cmd[i])
+	{
+		if (!ft_isspace(cmd[i]))
+		{
+			length = get_word_length(&(cmd[i]), &quote);
+			if (!(tab[*j] = ft_strsub((const char*)cmd, i + quote, length)))
+				return (0);
+			(*j)++;
+			i += length + ((quote == 1) ? 2 : 0);
+			quote = 0;
+		}
+		else
+			i++;
+	}
+	tab[*j] = NULL;
 	return (1);
 }
 
-char	**parse_cmd(char *cmd)
+char			**parse_cmd(char *cmd)
 {
-	char	**tab;
-	char	*tmp;
+	char			**tab;
+	char			*tmp;
+	unsigned int	j;
 
 	if (cmd == NULL)
 		return (NULL);
 	if (!(tmp = ft_strdupwstr(cmd, "\"\"")))
 		return (NULL);
-	ft_strdel(&cmd);
-	cmd = tmp;
-	if(!(tab = (char**)malloc(sizeof(char*) * (count_words(cmd) + 1))))
+	j = 0;
+	if(!(tab = (char**)malloc(sizeof(char*) * (count_words(tmp) + 1))))
+	{
+		ft_strdel(&tmp);
 		return (NULL);
-	if (!(create_words(cmd, tab, 0, -1)))
-	{
-
 	}
+	if (!(create_words(tmp, tab, 0, &j)))
+	{
+		ft_strdel(&tmp);
+		return (delete_cmd_tab(tab, j - 1));
+	}
+	ft_strdel(&tmp);
 	return (tab);
-}
-
-int		main()
-{
-	char **tab;
-	int i;
-
-	//tab = parse_cmd(ft_strdup("      echo coucou les  gens \"coucou      les       gens\"\"coucou\"abcdef       "));
-	tab = parse_cmd(ft_strdup("echo \"Bonjour\""));
-	i = 0;
-	while (tab[i])
-	{
-		ft_printf("%s\n", tab[i]);
-		i++;
-	}
-	return (0);
 }

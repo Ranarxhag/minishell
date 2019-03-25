@@ -1,21 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors.c                                           :+:      :+:    :+:   */
+/*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjovanov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/21 11:18:01 by bjovanov          #+#    #+#             */
-/*   Updated: 2019/02/21 11:18:02 by bjovanov         ###   ########.fr       */
+/*   Created: 2019/03/25 18:26:52 by bjovanov          #+#    #+#             */
+/*   Updated: 2019/03/25 18:26:54 by bjovanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-void	error_message(char *message, char *var)
+/*
+** add flag -n
+*/
+
+int		echo_builtin(char **instruction, t_env *env)
 {
-	ft_putstr_fd((char const *)message, 2);
-	if (var != NULL)
-		ft_putstr_fd((char const*)var, 2);
-	ft_putchar_fd('\n', 2);
+	int i;
+
+	i = 1;
+	while (instruction[i])
+	{
+		if (i > 1)
+			ft_printf(" ");
+		ft_printf("%s", instruction[i]);
+		i++;
+	}
+	ft_printf("\n");
+	if (env) {}
+	return (1);
 }

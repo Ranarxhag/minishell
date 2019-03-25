@@ -22,7 +22,11 @@ int		execute_instruction(char **instruction, t_env *env)
 		return (execute_builtin(instruction, env));
 	if (!(path = set_path(instruction, env)))
 		return (0);
-	enstr = env_to_string(env);
+	if (!(enstr = env_to_string(env)))
+	{
+		ft_strdel(&path);
+		return (0);
+	}
 	pid = fork();
 	if (pid == 0)
 		execve(path, instruction, enstr);
@@ -30,6 +34,10 @@ int		execute_instruction(char **instruction, t_env *env)
 	return (1);
 }
 
+/*
+** For execute_instruction() function, not need to protect it because we want
+** to free 'parts' in all cases and we don't want to stop the execution
+*/
 int		execute_instructions(char **instructions, t_env *env)
 {
 	int 	i;
@@ -40,7 +48,7 @@ int		execute_instructions(char **instructions, t_env *env)
 	while (instructions[i])
 	{
 		handle_expansions(&(instructions[i]), env);
-		if (!(parts = ft_strsplit(instructions[i], ' ')))
+		if (!(parts = parse_cmd(instructions[i])))
 		{
 			i++;
 			continue ;

@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors.c                                           :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjovanov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/21 11:18:01 by bjovanov          #+#    #+#             */
-/*   Updated: 2019/02/21 11:18:02 by bjovanov         ###   ########.fr       */
+/*   Created: 2019/03/25 18:27:02 by bjovanov          #+#    #+#             */
+/*   Updated: 2019/03/25 18:27:03 by bjovanov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-void	error_message(char *message, char *var)
+int		exit_builtin(char **instruction, t_env *env)
 {
-	ft_putstr_fd((char const *)message, 2);
-	if (var != NULL)
-		ft_putstr_fd((char const*)var, 2);
-	ft_putchar_fd('\n', 2);
+	ft_printf("%s called !\n", instruction[0]);
+	if (env) {}
+	return (1);
 }
