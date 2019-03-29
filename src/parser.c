@@ -29,10 +29,11 @@ static int		get_word_length(char *cmd, int *quote)
 	int count;
 
 	count = 0;
-	if (cmd[0] == '"')
+	if (cmd[0] == '"' || cmd[0] == '\'')
 	{
 		*quote = 1;
-		return ((int)ft_strclen((const char*)cmd + 1, '"'));
+		return ((int)ft_strclen((const char*)cmd + 1,
+			cmd[0] == '"' ? '"' : '\''));
 	}
 	while (cmd[count] && !ft_isspace(cmd[count]))
 		count++;
@@ -92,24 +93,14 @@ static int		create_words(char *cmd, char **tab, size_t i, unsigned int *j)
 char			**parse_cmd(char *cmd)
 {
 	char			**tab;
-	char			*tmp;
 	unsigned int	j;
 
 	if (cmd == NULL)
 		return (NULL);
-	if (!(tmp = ft_strdupwstr(cmd, "\"\"")))
-		return (NULL);
 	j = 0;
-	if(!(tab = (char**)malloc(sizeof(char*) * (count_words(tmp) + 1))))
-	{
-		ft_strdel(&tmp);
+	if (!(tab = (char**)malloc(sizeof(char*) * (count_words(cmd) + 1))))
 		return (NULL);
-	}
-	if (!(create_words(tmp, tab, 0, &j)))
-	{
-		ft_strdel(&tmp);
+	if (!(create_words(cmd, tab, 0, &j)))
 		return (delete_cmd_tab(tab, j - 1));
-	}
-	ft_strdel(&tmp);
 	return (tab);
 }

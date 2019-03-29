@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	del_string_env(char	***str, int i)
+void	del_string_env(char ***str, int i)
 {
 	while (i >= 0)
 	{
@@ -65,12 +65,19 @@ void	delete_environment(t_env **env)
 	exit(EXIT_FAILURE);
 }
 
-void	set_environment(t_env **env, char **envp)
+/*
+** 'argc' and 'argv' parameters are just there because of -Wall -Wextra -Werror
+** flags
+*/
+
+void	set_environment(t_env **env, char **envp, int argc, char **argv)
 {
-	int i;
-	t_env *node;
+	int		i;
+	t_env	*node;
 	char	**tab;
 
+	argc = 0;
+	argv = NULL;
 	i = 0;
 	*env = NULL;
 	node = NULL;

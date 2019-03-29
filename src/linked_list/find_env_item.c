@@ -20,7 +20,7 @@ t_env	*find_env_item_by_key(t_env *env, char *key)
 	while (tmp)
 	{
 		if (ft_strequ(tmp->key, key))
-			break;
+			break ;
 		tmp = tmp->next;
 	}
 	return (tmp);
@@ -34,7 +34,7 @@ t_env	*find_env_item_by_value(t_env *env, char *value)
 	while (tmp)
 	{
 		if (ft_strequ(tmp->value, value))
-			break;
+			break ;
 		tmp = tmp->next;
 	}
 	return (tmp);

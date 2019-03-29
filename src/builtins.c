@@ -16,16 +16,12 @@ int		(*get_builtin_func(char *name))(char**, t_env*)
 {
 	if (ft_strequ("cd", name))
 		return (&cd_builtin);
-	else if (ft_strequ("echo", name))
-		return (&echo_builtin);
 	else if (ft_strequ("setenv", name))
 		return (&setenv_builtin);
 	else if (ft_strequ("env", name))
 		return (&env_builtin);
 	else if (ft_strequ("unsetenv", name))
 		return (&unsetenv_builtin);
-	else if (ft_strequ("exit", name))
-		return (&exit_builtin);
 	return (0);
 }
 
@@ -45,7 +41,15 @@ int		is_builtin(char *command)
 
 int		execute_builtin(char **instruction, t_env *env)
 {
-	if (!(get_builtin_func(instruction[0])(instruction, env)))
-		return (0);
+	if (ft_strequ("echo", instruction[0]))
+	{
+		if (!(echo_builtin(instruction)))
+			return (0);
+	}
+	else
+	{
+		if (!(get_builtin_func(instruction[0])(instruction, env)))
+			return (0);
+	}
 	return (1);
 }

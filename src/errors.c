@@ -12,6 +12,20 @@
 
 #include "minishell.h"
 
+void	delete_tab(char ***tab)
+{
+	int i;
+
+	i = 0;
+	while ((*tab)[i])
+	{
+		ft_strdel(&((*tab)[i]));
+		i++;
+	}
+	ft_strdel(*tab);
+	tab = NULL;
+}
+
 void	error_message(char *message, char *var)
 {
 	ft_putstr_fd((char const *)message, 2);

@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 int		try_path(char *path)
-{	
+{
 	struct stat *file;
 
 	if (!(file = malloc(sizeof(*file))))
@@ -35,7 +35,7 @@ char	*set_origin_path(char *command, t_env *env)
 {
 	int		res;
 	char	*path;
-	char 	*value;
+	char	*value;
 
 	value = command[0] == '/' ? "" :
 	(find_env_item_by_key(env, "PWD"))->value;
@@ -60,6 +60,21 @@ char	*set_origin_path(char *command, t_env *env)
 	return (path);
 }
 
+char	**get_env_path(char *command, t_env *env, int *res, int *i)
+{
+	t_env *path;
+
+	*i = -1;
+	*res = 0;
+	path = find_env_item_by_key(env, "PATH");
+	if (!path)
+	{
+		ft_printf("%s: No such file or directory\n", command);
+		return (NULL);
+	}
+	return (ft_strsplit(path->value, ':'));
+}
+
 char	*set_env_path(char *command, t_env *env)
 {
 	char	**env_paths;
@@ -67,13 +82,10 @@ char	*set_env_path(char *command, t_env *env)
 	int		res;
 	int		i;
 
-	if (!(env_paths = ft_strsplit(
-		(find_env_item_by_key(env, "PATH"))->value, ':')))
+	if (!(env_paths = get_env_path(command, env, &res, &i)))
 		return (NULL);
-	res = 0;
-	i = 0;
 	tmp = NULL;
-	while (env_paths[i])
+	while (env_paths[++i])
 	{
 		if (!(tmp = ft_str3join(env_paths[i], env_paths[i][ft_strlen(
 			env_paths[i]) - 1] == '/' ? "" : "/", command)))
@@ -85,7 +97,6 @@ char	*set_env_path(char *command, t_env *env)
 			delete_tab(&env_paths);
 			return (tmp);
 		}
-		i++;
 	}
 	error_message("minishell: command not found: ", command);
 	delete_tab(&env_paths);

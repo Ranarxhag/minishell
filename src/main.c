@@ -11,70 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include  <signal.h>
-
-
-/*
-int		main(void)
-{
-	pid_t	pid;
-	char	buff[4096];
-	char	**argv;
-	while (1)
-	{
-		ft_printf("$> ");
-		if (read(0, buff, 4096))
-		{
-			pid = fork();
-			if (pid == 0)
-			{
-				argv = ft_strsplit(ft_strdupwc(buff, '\n'), ' ');
-				if(execve(ft_strjoin("/bin/", argv[0]), argv, NULL) == -1)
-					ft_printf("%s: command not found\n", argv[0]);
-				ft_strdel(argv);
-			}
-			else
-			{
-				wait(NULL);
-				continue ;
-			}
-		}
-	}
-
-	return 0;
-}
-*/
-
-/*
-int		execute_command(char *command)
-{
-	pid_t	pid;
-	char	**args;
-
-	if(!(args = ft_strsplit(command, ' ')))
-		return (-1);
-	pid = fork();
-	if (pid == 0)
-	{
-		printf("%s\n", ft_strjoin("~/Desktop/ft_ls/", args[0]));
-		if (execve(ft_strjoin("~/Desktop/ft_ls/", args[0]), args, NULL) == -1)
-			printf("Commande inconnue\n");
-	}
-	else
-	{
-		wait(NULL);
-	}
-	return (1);
-}
-
-char	*get_command(void)
-{
-	char	*buff;
-
-	get_next_line(0, &buff);
-	return (buff);
-}
-*/
 
 char	**split_command(char *buff)
 {
@@ -83,26 +19,6 @@ char	**split_command(char *buff)
 	if (!(instructions = ft_strsplit(buff, ';')))
 		return (NULL);
 	return (instructions);
-}
-
-void	delete_tab(char ***tab)
-{
-	int i;
-
-	i = 0;
-	while ((*tab)[i])
-	{
-		ft_strdel(&((*tab)[i]));
-		i++;
-	}
-	ft_strdel(*tab);
-	tab = NULL;
-}
-
-void	handle_signal(int signum)
-{
-	if (signum == SIGINT)
-		exit(EXIT_FAILURE);
 }
 
 int		is_valid_buff(char *buff)
@@ -117,21 +33,55 @@ int		is_valid_buff(char *buff)
 	return (1);
 }
 
+char	*get_cwd(t_env *env)
+{
+	char	cwd[PATH_MAX];
+	char	**tab;
+	char	*name;
+	t_env	*home;
+
+	home = find_env_item_by_key(env, "HOME");
+	if (!(getcwd(cwd, PATH_MAX)))
+		return (NULL);
+	if (home != NULL && ft_strequ(home->value, cwd))
+		return (ft_strdup("~"));
+	if (ft_strequ("/", cwd))
+		return (ft_strdup(cwd));
+	if (!(tab = ft_strsplit(cwd, '/')))
+		return (NULL);
+	if (!(name = ft_strdup(tab[ft_array_length((void**)tab) - 1])))
+	{
+		delete_tab(&tab);
+		return (NULL);
+	}
+	delete_tab(&tab);
+	return (name);
+}
+
+int		prompt_manager(t_env *env, char **buff)
+{
+	char	*gcw;
+
+	if (!(gcw = get_cwd(env)))
+		return (0);
+	ft_printf("{bold}{yellow}↬ %s{eoc}{eocbold} ", gcw);
+	ft_strdel(&gcw);
+	if (get_next_line(0, buff) == -1 || !is_valid_buff(*buff))
+		return (0);
+	return (1);
+}
+
 int		main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
 	char	*buff;
 	char	**instructions;
 
-	if (argv)
-		argc = 1;
-	set_environment(&env, envp);
-	signal(SIGINT, handle_signal);
+	set_environment(&env, envp, argc, argv);
 	instructions = NULL;
 	while (1)
 	{
-		ft_printf("$> ");
-		if (get_next_line(0, &buff) == -1 || !is_valid_buff(buff))
+		if (!prompt_manager(env, &buff))
 			continue ;
 		if (!(instructions = split_command(buff)))
 		{
@@ -140,33 +90,12 @@ int		main(int argc, char **argv, char **envp)
 			continue ;
 		}
 		ft_strdel(&buff);
-		execute_instructions(instructions, env);
+		if (!(execute_instructions(instructions, env)))
+		{
+			delete_tab(&instructions);
+			return (0);
+		}
 		delete_tab(&instructions);
 	}
 	return (0);
 }
-
-/*
-int		main(int argc, char **argv, char **envp)
-{
-	char	*command;
-	int i = 0;
-
-	if (argv)
-		argc = 1;
-	while(envp[i])
-	{
-		printf("%s\n", envp[i]);
-		i++;
-	}
-
-	while (1)
-	{
-		ft_printf("$> ");
-		if ((command = get_command()))
-		{
-			execute_command(command);
-		}
-	}
-}
-*/

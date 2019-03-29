@@ -12,7 +12,19 @@
 
 #include "minishell.h"
 
-int		execute_instruction(char **instruction, t_env *env)
+static int	is_valid_instruction(char *instruction)
+{
+	int i;
+
+	i = 0;
+	while (ft_isspace(instruction[i]))
+		i++;
+	if (instruction[i] == '\0')
+		return (0);
+	return (1);
+}
+
+int			execute_instruction(char **instruction, t_env *env)
 {
 	char	*path;
 	pid_t	pid;
@@ -38,21 +50,25 @@ int		execute_instruction(char **instruction, t_env *env)
 ** For execute_instruction() function, not need to protect it because we want
 ** to free 'parts' in all cases and we don't want to stop the execution
 */
-int		execute_instructions(char **instructions, t_env *env)
+
+int			execute_instructions(char **instructions, t_env *env)
 {
-	int 	i;
+	int		i;
 	char	**parts;
 
 	i = 0;
 	parts = NULL;
 	while (instructions[i])
 	{
-		handle_expansions(&(instructions[i]), env);
-		if (!(parts = parse_cmd(instructions[i])))
+		if (!is_valid_instruction(instructions[i]) ||
+			!handle_expansions(&(instructions[i]), env) ||
+			!(parts = parse_cmd(instructions[i])))
 		{
 			i++;
 			continue ;
 		}
+		if (ft_strequ(parts[0], "exit"))
+			return (0);
 		execute_instruction(parts, env);
 		delete_tab(&parts);
 		i++;

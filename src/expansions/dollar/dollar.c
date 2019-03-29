@@ -12,29 +12,29 @@
 
 #include "minishell.h"
 
-int		del_part1(char **part1)
+int				del_part1(char **part1)
 {
 	ft_strdel(part1);
 	return (0);
 }
 
-char	*replace_variable(char *str, t_env *env)
+char			*replace_variable(char *str, t_env *env)
 {
 	int		length;
 	char	*variable;
 	char	*part2;
 
 	length = 0;
-	while (ft_isupper(str[length]) || ft_islower(str[length]) || 
+	while (ft_isupper(str[length]) || ft_islower(str[length]) ||
 		ft_isdigit(str[length]) || str[length] == '_')
 		length++;
-	if(!(variable = ft_strsub(str, 0, length)))
+	if (!(variable = ft_strsub(str, 0, length)))
 		return (NULL);
-	if(find_env_item_by_key(env, variable) == NULL)
+	if (find_env_item_by_key(env, variable) == NULL)
 	{
-		part2 = ft_strjoin("", &(str[length]));
+		ft_printf("%s: Undefined variable\n", variable);
 		ft_strdel(&variable);
-		return (part2);
+		return (NULL);
 	}
 	part2 = ft_strjoin((find_env_item_by_key(env, variable))->value,
 		&(str[length]));
@@ -42,18 +42,16 @@ char	*replace_variable(char *str, t_env *env)
 	return (part2);
 }
 
-int		dollar_expansion(char **command, t_env *env)
+int				dollar_expansion(char **command, t_env *env)
 {
-	char	*c;
 	char	*part1;
 	char	*part2;
 	char	*tmp;
 
 	tmp = NULL;
-	c = *command;
-	while ((part2 = ft_strchr(c, '$')))
+	while ((part2 = ft_strchr(*command, '$')))
 	{
-		if (!(part1 = ft_strsub(c, 0, ft_strlen(c) -
+		if (!(part1 = ft_strsub(*command, 0, ft_strlen(*command) -
 			ft_strlen(part2))))
 			return (0);
 		part2++;

@@ -14,7 +14,19 @@
 
 int		unsetenv_builtin(char **instruction, t_env *env)
 {
-	ft_printf("%s called !\n", instruction[0]);
-	if (env) {}
+	int i;
+
+	if (ft_array_length((void**)instruction) == 1)
+	{
+		ft_printf("setenv: too few arguments\n");
+		return (0);
+	}
+	i = 1;
+	while (instruction[i])
+	{
+		if (find_env_item_by_key(env, instruction[i]))
+			env = delete_env_item_by_key(&env, instruction[i]);
+		i++;
+	}
 	return (1);
 }

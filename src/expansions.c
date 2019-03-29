@@ -15,8 +15,10 @@
 int		handle_expansions(char **command, t_env *env)
 {
 	if (ft_strchr(*command, '~'))
-		tilde_expansion(command, env);
+		if (!(tilde_expansion(command)))
+			return (0);
 	if (ft_strchr(*command, '$'))
-		dollar_expansion(command, env);
+		if (!(dollar_expansion(command, env)))
+			return (0);
 	return (1);
 }
