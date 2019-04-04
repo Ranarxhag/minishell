@@ -22,8 +22,7 @@ void	delete_tab(char ***tab)
 		ft_strdel(&((*tab)[i]));
 		i++;
 	}
-	ft_strdel(*tab);
-	tab = NULL;
+	ft_strdel((char**)tab);
 }
 
 void	error_message(char *message, char *var)
