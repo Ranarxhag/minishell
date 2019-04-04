@@ -93,6 +93,7 @@ int		main(int argc, char **argv, char **envp)
 		if (!(execute_instructions(instructions, env)))
 		{
 			delete_tab(&instructions);
+			delete_environment(&env);
 			return (0);
 		}
 		delete_tab(&instructions);

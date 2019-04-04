@@ -43,6 +43,8 @@ int			execute_instruction(char **instruction, t_env *env)
 	if (pid == 0)
 		execve(path, instruction, enstr);
 	wait(NULL);
+	delete_tab(&enstr);
+	ft_strdel(&path);
 	return (1);
 }
 

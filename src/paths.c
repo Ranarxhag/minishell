@@ -28,31 +28,28 @@ int		try_path(char *path)
 		ft_memdel((void**)&(file));
 		return (-2);
 	}
+	ft_memdel((void**)&(file));
 	return (1);
 }
 
-char	*set_origin_path(char *command, t_env *env)
+char	*set_origin_path(char *command)
 {
 	int		res;
 	char	*path;
 	char	*value;
+	char	cwd[PATH_MAX];
 
-	value = command[0] == '/' ? "" :
-	(find_env_item_by_key(env, "PWD"))->value;
+	if (!(getcwd(cwd, PATH_MAX)))
+		return (NULL);
+	value = command[0] == '/' ? "" : cwd;
 	if (!(path = ft_str3join(value, value[ft_strlen(
 		value) - 1] == '/' ? "" : "/", command)))
 		return (NULL);
-	res = try_path(path);
-	if (res == 0)
-	{
-		ft_strdel(&path);
-		return (NULL);
-	}
-	else if (res == -1)
+	if ((res = try_path(path)) == -1)
 		error_message("minishell: no such file or directory: ", command);
 	else if (res == -2)
 		error_message("minishell: permission denied: ", command);
-	if (res < 0)
+	if (res <= 0)
 	{
 		ft_strdel(&path);
 		return (NULL);
@@ -90,7 +87,7 @@ char	*set_env_path(char *command, t_env *env)
 		if (!(tmp = ft_str3join(env_paths[i], env_paths[i][ft_strlen(
 			env_paths[i]) - 1] == '/' ? "" : "/", command)))
 			return (NULL);
-		if ((res = try_path(tmp)) < 0)
+		if ((res = try_path(tmp)) <= 0)
 			ft_strdel(&tmp);
 		else
 		{
@@ -110,7 +107,7 @@ char	*set_path(char **command, t_env *env)
 	path = NULL;
 	if (ft_strchr(*command, '/'))
 	{
-		if (!(path = set_origin_path(*command, env)))
+		if (!(path = set_origin_path(*command)))
 			return (NULL);
 	}
 	else

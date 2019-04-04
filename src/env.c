@@ -86,7 +86,10 @@ void	set_environment(t_env **env, char **envp, int argc, char **argv)
 	{
 		if (!(tab = ft_strsplit(envp[i], '=')) ||
 			ft_array_length((void**)tab) != 2)
+		{
+			delete_tab(&tab);
 			delete_environment(env);
+		}
 		if (!(node = new_env_item(tab[0], tab[1])))
 		{
 			delete_tab(&tab);
