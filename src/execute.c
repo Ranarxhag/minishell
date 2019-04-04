@@ -70,7 +70,10 @@ int			execute_instructions(char **instructions, t_env *env)
 			continue ;
 		}
 		if (ft_strequ(parts[0], "exit"))
+		{
+			delete_tab(&parts);
 			return (0);
+		}
 		execute_instruction(parts, env);
 		delete_tab(&parts);
 		i++;
