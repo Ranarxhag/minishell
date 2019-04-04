@@ -66,8 +66,13 @@ int		prompt_manager(t_env *env, char **buff)
 		return (0);
 	ft_printf("{bold}{yellow}↬ %s{eoc}{eocbold} ", gcw);
 	ft_strdel(&gcw);
-	if (get_next_line(0, buff) == -1 || !is_valid_buff(*buff))
+	if (get_next_line(0, buff) == -1)
 		return (0);
+	if (!is_valid_buff(*buff))
+	{
+		ft_strdel(buff);
+		return (0);
+	}
 	return (1);
 }
 
@@ -84,11 +89,7 @@ int		main(int argc, char **argv, char **envp)
 		if (!prompt_manager(env, &buff))
 			continue ;
 		if (!(instructions = split_command(buff)))
-		{
-			ft_strdel(&buff);
-			delete_environment(&env);
-			continue ;
-		}
+			exit(EXIT_FAILURE);
 		ft_strdel(&buff);
 		if (!(execute_instructions(instructions, env)))
 		{

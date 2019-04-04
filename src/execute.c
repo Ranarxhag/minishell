@@ -21,6 +21,8 @@ static int	is_valid_instruction(char *instruction)
 		i++;
 	if (instruction[i] == '\0')
 		return (0);
+	if (ft_strequ(".", instruction) || ft_strequ("..", instruction))
+		return (0);
 	return (1);
 }
 

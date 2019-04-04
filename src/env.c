@@ -78,25 +78,18 @@ void	set_environment(t_env **env, char **envp, int argc, char **argv)
 
 	argc = 0;
 	argv = NULL;
-	i = 0;
+	i = -1;
 	*env = NULL;
 	node = NULL;
 	tab = NULL;
-	while (envp[i])
+	while (envp[++i])
 	{
 		if (!(tab = ft_strsplit(envp[i], '=')) ||
 			ft_array_length((void**)tab) != 2)
-		{
-			delete_tab(&tab);
-			delete_environment(env);
-		}
+			exit(EXIT_FAILURE);
 		if (!(node = new_env_item(tab[0], tab[1])))
-		{
-			delete_tab(&tab);
-			delete_environment(env);
-		}
+			exit(EXIT_FAILURE);
 		add_env_item_last(env, node);
 		delete_tab(&tab);
-		i++;
 	}
 }
